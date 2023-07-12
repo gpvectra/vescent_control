@@ -6,14 +6,14 @@ def rampdef(rampname):
                         'Temps_ch2':[1,2,3],
                          'Temps_ch3':[1,2,3],
                          'Temps_ch4':[1,2,3]}  #4 channels on vescent / only need to fill in ones you want
-        Elapsed_m = [0.0,0.1,0.2]
+        Elapsed_m = [0.0,5/60,10/60]
 
         start_time = 'now'#
         #start_time = datetime(2023, 7, 10,18,24,0) #'now' for immediate start, or datetime y,m,d,h,m,s
         #start_time = datetime.now()+timedelta(minutes = 1)#datetime.datetime(2023, 07, 10,12,0,0) #'now' for immediate start, or datetime y,m,d,h,m,s
 
         repeats = 3
-        repeat_interval_m = .5  # cycle repeat interval in minutes, 0 for no repeat
+        repeat_interval_m = 20/60  # cycle repeat interval in minutes, 0 for no repeat
 
 
 

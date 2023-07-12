@@ -69,7 +69,7 @@ print('Start')
 print(datetime.now())
 
 
-rampname = '87/32 retrace 20h+4h'#'test'#
+rampname = 'test'#'87/32 retrace 20h+4h'#'test'#
 Temperatures,Elapsed_m, start_time, repeats, repeat_interval_m = rampdef(rampname)
 
 if start_time == 'now':
@@ -81,7 +81,10 @@ logfilename = start_time.strftime('./logs/logfile_%Y-%m-%d_%H-%M-%S.log')#'./log
 Timelist = []
 for m in Elapsed_m:
     Timelist.append(start_time+timedelta(minutes=m))
-print(Timelist)
+#print(Timelist)
+repeat_buffer_m = 0.9*(repeat_interval_m-Elapsed_m[-1])
+#how much deadspece there is after last setpoint change (for use in while loop).
+# *0.9 so it doesnt go into the next loop which will delay and compress the next repeat(s) and
 logtofile(logfilename, 'ramp definitions: '+rampname)
 logtofile(logfilename,'Elapsed_m:  '+str(Elapsed_m))
 logtofile(logfilename,'Temperature setpoints: '+str(Temperatures))
@@ -94,9 +97,9 @@ while(repeats>0):
     loopstart_t=datetime.now()
     last_time = Timelist[-1]
     first_time = Timelist[0]
-    while(datetime.now()< last_time):#+repeat_interval_m): #runs until last point is set, then repeats  #<loopstart_t+timedelta(seconds = 10)): #use loopstart for testing
-        print('current sequence ends in :' + str(last_time-datetime.now()))
-        print('new sequence begins in :' + str(first_time - datetime.now()))
+    while(datetime.now()< last_time+timedelta(minutes = repeat_buffer_m)):
+        #+repeat_interval_m): #runs until last point is set, then repeats  #need buffer or else last time point can get skipped, esp w/ a sleep()
+
 
         #print(datetime.now())
         #for i, timeset in enumerate(Timelist):
@@ -104,6 +107,7 @@ while(repeats>0):
         for i in range(0,len(Timelist),1):
             #loopran = 0
             if datetime.now()>Timelist[i]:# && loopran=0:
+                print('---------------------')
                 ser = establish_com(com)
                 print(ser)
                 #ser.open()
@@ -117,13 +121,16 @@ while(repeats>0):
                     print(msg)  # 'Channel '+str(channel)+' set to ' + confirm + ' °C: ' + str(datetime.now()))
                     logtofile(logfilename, msg)
                 #loopran = 1;
+                print('current sequence ends in :' + str(last_time-datetime.now()))
+                print('new sequence begins :' + str(first_time - datetime.now()))
+                print('---------------------')
                 Timelist[i] += timedelta(weeks=100)  # blow up the time so the channel isnt repeatedly set, timelist is reinitialized for subsequent repeats
                 try:
                     ser.close()
                 except:
                     print('com connection close failed')
 
-        time.sleep(10) #60
+        #time.sleep(10) #this can cause the loop to overshoot and miss the last point
     repeats -= 1
     print('Repeats left: ' + str(repeats))
 
