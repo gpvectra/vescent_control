@@ -24,8 +24,8 @@ def rampdef(rampname):
                          'Temps4':[35.65,35.65,35.65]}  #4 channels on vescent
         Elapsed_m = [0,10,250] #elapsed minutes to initiate new temp setpoint (same length as temps1,2,3...
 
-        #start_time = 'now'# datetime.datetime(2023, 07, 10,12,0,0) #'now' for immediate start, or datetime y,m,d,h,m,s
-        start_time = datetime(2023, 7, 11, 11, 50, 0)  # 'now' for immediate start, or datetime y,m,d,h,m,s
+        start_time = 'now'# datetime.datetime(2023, 07, 10,12,0,0) #'now' for immediate start, or datetime y,m,d,h,m,s
+        #start_time = datetime(2023, 7, 11, 11, 50, 0)  # 'now' for immediate start, or datetime y,m,d,h,m,s
         # start_time = datetime.now()+timedelta(minutes = 1)#datetime.datetime(2023, 07, 10,12,0,0) #'now' for immediate start, or datetime y,m,d,h,m,s
 
         repeats = 10

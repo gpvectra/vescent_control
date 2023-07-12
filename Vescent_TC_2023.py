@@ -8,9 +8,9 @@ from ramps import rampdef
 
 
 
-
 # define vescent coms
-com = 'COM3'
+com = 'COM4'#onr laptop
+#com = 'COM3' my laptop
 
 
 def establish_com(com): #takes ser in case ser already exists
@@ -63,7 +63,7 @@ print('Start')
 print(datetime.now())
 
 
-rampname = 'test'#'87/32 retrace 20h+4h'
+rampname = '87/32 retrace 20h+4h'#'test'#
 Temperatures,Elapsed_m, start_time, repeats, repeat_interval_m = rampdef(rampname)
 
 if start_time == 'now':
@@ -92,7 +92,7 @@ while(repeats>0):
 
         #print(datetime.now())
         #for i, timeset in enumerate(Timelist):
-        time.sleep(1)
+        #time.sleep(1)
         for i in range(0,len(Timelist),1):
             #loopran = 0
             if datetime.now()>Timelist[i]:# && loopran=0:
@@ -112,7 +112,7 @@ while(repeats>0):
                 except:
                     print('com connection close failed')
 
-        #time.sleep(10) #60
+        time.sleep(60) #60
     repeats -= 1
     print('Repeats left: ' + str(repeats))
 
