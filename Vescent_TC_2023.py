@@ -104,7 +104,7 @@ while(repeats>0):
         #print(datetime.now())
         #for i, timeset in enumerate(Timelist):
         #time.sleep(1)
-        for i in range(0,len(Timelist),1):
+        for i in range(0,len(Timelist),1): 
             #loopran = 0
             if datetime.now()>Timelist[i]:# && loopran=0:
                 print('---------------------')
