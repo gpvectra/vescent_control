@@ -5,12 +5,12 @@ import time
 #import matplotlib.pyplot as plt
 #from datetime import date
 from ramps import rampdef
-
+import os
 
 
 # define vescent coms
-com = 'COM4'#onr laptop
-#com = 'COM3' my laptop
+#com = 'COM4'#onr laptop
+com = 'COM3' # my laptop
 
 
 def establish_com(com): #takes ser in case ser already exists
@@ -36,20 +36,26 @@ def set_Vesc_temp(ser, channel, T_C): #ch 1,2,3,4
     confirm = ser.readline().decode('utf-8')[:-4]
     while confirm == '':  # avoid empty returns, no need for sleep delay
         confirm = ser.readline().decode('utf-8')[:-4]
-    msg='Channel '+str(channel)+' set to ' + confirm + ' °C: ' + str(datetime.now())
-    print(msg)#'Channel '+str(channel)+' set to ' + confirm + ' °C: ' + str(datetime.now()))
-    logtofile(logfilename,msg)
     if float(confirm)!=T_C:
         print('Setpoint not correct, T limit exceeded?')
     #   servo_enable(CH) #this would make sure the channel is on, but causes a short glitch as it resets.
 
-def logtofile(filename,infostring):
+def create_log_folder(cwd):
     try:
         import os
         cwd = os.getcwd()
         os.makedirs(cwd + '/logs')
+        message = 'log folder created'
     except:
-        print('folder not created (already exists?)')
+        message = 'log folder not created (already exists?)'
+    return(message)
+
+    # from pathlib import Path
+    # logdir = Path(cwd + '/logs')
+    # if os.path.exists(logdir) == 'False':
+    #     os.makedirs(cwd + '/logs')
+
+def logtofile(filename,infostring):
     import logging
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
@@ -68,7 +74,9 @@ Temperatures,Elapsed_m, start_time, repeats, repeat_interval_m = rampdef(rampnam
 
 if start_time == 'now':
     start_time = datetime.now()
-
+cwd = os.getcwd()
+message = create_log_folder(cwd)
+print(message)
 logfilename = start_time.strftime('./logs/logfile_%Y-%m-%d_%H-%M-%S.log')#'./logs/'+str(start_time)+'.log'
 Timelist = []
 for m in Elapsed_m:
@@ -87,8 +95,8 @@ while(repeats>0):
     last_time = Timelist[-1]
     first_time = Timelist[0]
     while(datetime.now()< last_time):#+repeat_interval_m): #runs until last point is set, then repeats  #<loopstart_t+timedelta(seconds = 10)): #use loopstart for testing
-       # print('sequence ends in :' + str(last_time-datetime.now()))
-        print('sequence begins in :' + str(first_time - datetime.now()))
+        print('current sequence ends in :' + str(last_time-datetime.now()))
+        print('new sequence begins in :' + str(first_time - datetime.now()))
 
         #print(datetime.now())
         #for i, timeset in enumerate(Timelist):
@@ -105,6 +113,9 @@ while(repeats>0):
                     # print(Temperatures[channel_seq][i])
                     #channel in range(1,len(Temperatures)+1,1):
                     set_Vesc_temp(ser, Vchannel+1, Temperatures[channel_seq][i])
+                    msg = 'Channel ' + str(Vchannel+1) + ' set to ' + str(Temperatures[channel_seq][i]) + ' °C: ' + str(datetime.now())
+                    print(msg)  # 'Channel '+str(channel)+' set to ' + confirm + ' °C: ' + str(datetime.now()))
+                    logtofile(logfilename, msg)
                 #loopran = 1;
                 Timelist[i] += timedelta(weeks=100)  # blow up the time so the channel isnt repeatedly set, timelist is reinitialized for subsequent repeats
                 try:
@@ -112,7 +123,7 @@ while(repeats>0):
                 except:
                     print('com connection close failed')
 
-        time.sleep(60) #60
+        time.sleep(10) #60
     repeats -= 1
     print('Repeats left: ' + str(repeats))
 
